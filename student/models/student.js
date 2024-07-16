@@ -1,35 +1,29 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../config/db.config');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db.js');
 
 const Student = sequelize.define('Student', {
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
   },
-  lastName: {
+  name: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: false
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
-    validate: {
-      isEmail: true,
-    },
+    unique: true
   },
-  age: {
+  averageScore: {
+    type: DataTypes.FLOAT,
+    allowNull: true
+  },
+  latestGraduationYear: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  phone_number: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  grade: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+    allowNull: true
+  }
 });
 
 module.exports = Student;

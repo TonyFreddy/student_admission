@@ -1,91 +1,54 @@
-const { Admission, Student, University } = require('../models');
+const Admission = require('../models/admission');
 
-// Créer une nouvelle admission
 exports.createAdmission = async (req, res) => {
   try {
-    const { status, coverLetter, graduationYear, averageScore, degree, idCard, studentId, universityId } = req.body;
-    const newAdmission = await Admission.create({
-      status,
-      coverLetter,
-      graduationYear,
-      averageScore,
-      degree,
-      idCard,
-      studentId,
-      universityId
-    });
-    res.status(201).json(newAdmission);
+    const { studentId, universityId, status } = req.body;
+    const admission = await Admission.create({ studentId, universityId, status });
+    res.status(201).json(admission);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Récupérer toutes les admissions
-exports.getAllAdmissions = async (req, res) => {
+exports.getAdmissions = async (req, res) => {
   try {
-    const admissions = await Admission.findAll({
-      include: [
-        { model: Student },
-        { model: University }
-      ]
-    });
-    res.status(200).json(admissions);
+    const admissions = await Admission.findAll();
+    res.json(admissions);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Récupérer une admission par ID
-exports.getAdmissionById = async (req, res) => {
+exports.getAdmission = async (req, res) => {
   try {
-    const admission = await Admission.findByPk(req.params.id, {
-      include: [
-        { model: Student },
-        { model: University }
-      ]
-    });
+    const { id } = req.params;
+    const admission = await Admission.findByPk(id);
     if (!admission) {
-      return res.status(404).json({ error: 'Admission not found' });
+      return res.status(404).json({ message: 'Admission not found' });
     }
-    res.status(200).json(admission);
+    res.json(admission);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Mettre à jour une admission
 exports.updateAdmission = async (req, res) => {
   try {
-    const { status, coverLetter, graduationYear, averageScore, degree, idCard, studentId, universityId } = req.body;
-    const admission = await Admission.findByPk(req.params.id);
-    if (!admission) {
-      return res.status(404).json({ error: 'Admission not found' });
-    }
-    admission.status = status;
-    admission.coverLetter = coverLetter;
-    admission.graduationYear = graduationYear;
-    admission.averageScore = averageScore;
-    admission.degree = degree;
-    admission.idCard = idCard;
-    admission.studentId = studentId;
-    admission.universityId = universityId;
-    await admission.save();
-    res.status(200).json(admission);
+    const { id } = req.params;
+    const { studentId, universityId, status } = req.body;
+    const admission = await Admission.update({ studentId, universityId, status }, { where: { id } });
+    res.json({ message: 'Admission updated successfully' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Supprimer une admission
 exports.deleteAdmission = async (req, res) => {
   try {
-    const admission = await Admission.findByPk(req.params.id);
-    if (!admission) {
-      return res.status(404).json({ error: 'Admission not found' });
-    }
-    await admission.destroy();
-    res.status(204).send();
+    const { id } = req.params;
+    await Admission.destroy({ where: { id } });
+    res.json({ message: 'Admission deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

@@ -1,30 +1,26 @@
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
+const User = require('../models/user');
 
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (!token) {
-    return res.sendStatus(401); // Unauthorized
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-    if (err) {
-      return res.sendStatus(403); // Forbidden
+exports.authenticate = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid token' });
     }
-    req.user = decodedToken;
+    req.user = user;
     next();
-  });
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
 };
 
-const authorizeRole = (role) => {
-  return (req, res, next) => {
-    if (req.user.role !== role) {
-      return res.sendStatus(403); // Forbidden
+exports.authorize = (roles) => {
+  return async (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'Forbidden' });
     }
     next();
   };
 };
-
-module.exports = { authenticateToken, authorizeRole };

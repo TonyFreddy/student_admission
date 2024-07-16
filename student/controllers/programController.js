@@ -1,79 +1,54 @@
-const { Program, CourseProgram } = require('../models');
+const Program = require('../models/program');
 
-// Créer un nouveau programme
 exports.createProgram = async (req, res) => {
   try {
-    const { name, description, universityId } = req.body;
-    const newProgram = await Program.create({
-      name,
-      description,
-      universityId
-    });
-    res.status(201).json(newProgram);
+    const { name, description } = req.body;
+    const program = await Program.create({ name, description });
+    res.status(201).json(program);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Récupérer tous les programmes
-exports.getAllPrograms = async (req, res) => {
+exports.getPrograms = async (req, res) => {
   try {
-    const programs = await Program.findAll({
-      include: [
-        { model: CourseProgram }
-      ]
-    });
-    res.status(200).json(programs);
+    const programs = await Program.findAll();
+    res.json(programs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Récupérer un programme par ID
-exports.getProgramById = async (req, res) => {
+exports.getProgram = async (req, res) => {
   try {
-    const program = await Program.findByPk(req.params.id, {
-      include: [
-        { model: CourseProgram }
-      ]
-    });
+    const { id } = req.params;
+    const program = await Program.findByPk(id);
     if (!program) {
-      return res.status(404).json({ error: 'Program not found' });
+      return res.status(404).json({ message: 'Program not found' });
     }
-    res.status(200).json(program);
+    res.json(program);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Mettre à jour un programme
 exports.updateProgram = async (req, res) => {
   try {
-    const { name, description, universityId } = req.body;
-    const program = await Program.findByPk(req.params.id);
-    if (!program) {
-      return res.status(404).json({ error: 'Program not found' });
-    }
-    program.name = name;
-    program.description = description;
-    program.universityId = universityId;
-    await program.save();
-    res.status(200).json(program);
+    const { id } = req.params;
+    const { name, description } = req.body;
+    const program = await Program.update({ name, description }, { where: { id } });
+    res.json({ message: 'Program updated successfully' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Supprimer un programme
 exports.deleteProgram = async (req, res) => {
   try {
-    const program = await Program.findByPk(req.params.id);
-    if (!program) {
-      return res.status(404).json({ error: 'Program not found' });
-    }
-    await program.destroy();
-    res.status(204).send();
+    const { id } = req.params;
+    await Program.destroy({ where: { id } });
+    res.json({ message: 'Program deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

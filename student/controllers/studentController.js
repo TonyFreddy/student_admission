@@ -1,21 +1,54 @@
-const db = require('../models/student');
-const Student = db.Studenttudent;
-
+const Student = require('../models/student');
 
 exports.createStudent = async (req, res) => {
-    const { name, email, universityId } = req.body;
-    console.log(req.body);
+  try {
+    const { name, email, averageScore, latestGraduationYear } = req.body;
+    const student = await Student.create({ name, email, averageScore, latestGraduationYear });
+    res.status(201).json(student);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
-    try {
-        const newStudent = await Student.create({
-            name,
-            email,
-            universityId
-        });
+exports.getStudents = async (req, res) => {
+  try {
+    const students = await Student.findAll();
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-        res.status(201).json(newStudent);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Une erreur est survenue lors de la création de l'étudiant"});
+exports.getStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findByPk(id);
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
     }
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, averageScore, latestGraduationYear } = req.body;
+    const student = await Student.update({ name, email, averageScore, latestGraduationYear }, { where: { id } });
+    res.json({ message: 'Student updated successfully' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.deleteStudent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Student.destroy({ where: { id } });
+    res.json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
