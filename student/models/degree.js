@@ -7,7 +7,7 @@ const Degree = sequelize.define('Degree', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  name: {
+  name: { 
     type: DataTypes.STRING,
     allowNull: false
   }

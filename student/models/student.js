@@ -7,7 +7,11 @@ const Student = sequelize.define('Student', {
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
   },
-  name: {
+   firstname: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  lastname: {
     type: DataTypes.STRING,
     allowNull: false
   },
