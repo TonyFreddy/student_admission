@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.js');
+const {sequelize} = require('../config/db.js');
 
 const Student = sequelize.define('Student', {
   id: {
@@ -14,7 +14,7 @@ const Student = sequelize.define('Student', {
   lastname: {
     type: DataTypes.STRING,
     allowNull: false
-  },
+  }/*,
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -27,7 +27,7 @@ const Student = sequelize.define('Student', {
   latestGraduationYear: {
     type: DataTypes.INTEGER,
     allowNull: true
-  }
+  }*/
 });
 
 module.exports = Student;
