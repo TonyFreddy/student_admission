@@ -1,3 +1,4 @@
+/*
 const { check, validationResult } = require('express-validator');
 
 exports.validate = (req, res, next) => {
@@ -7,3 +8,4 @@ exports.validate = (req, res, next) => {
   }
   next();
 };
+*/
